@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-import sys, BeautifulSoup, GmailSend,urllib,sqlite3
+import sys, BeautifulSoup,urllib,sqlite3
 
 PRICE_LIMIT = 40
+BASE_URL = "" # TODO GUESS
 DB_FILE = "/home/stephen/bargainme.sqlite"
-URL1 = "http://www.trademe.co.nz/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-0513-6458-&searchString=adsl&x=0&y=0&searchregion=100&type=Search&redirectFromAll=False&generalSearch_keypresses=4&generalSearch_suggested=0"
-URL2 = "http://www.trademe.co.nz/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-2927-&searchString=wifi&type=Search&generalSearch_keypresses=4&generalSearch_suggested=0"
+URL1 = "http://www."+BASE_URL+"/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-0513-6458-&searchString=adsl&x=0&y=0&searchregion=100&type=Search&redirectFromAll=False&generalSearch_keypresses=4&generalSearch_suggested=0"
+URL2 = "http://www."+BASE_URL+"/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-2927-&searchString=wifi&type=Search&generalSearch_keypresses=4&generalSearch_suggested=0"
 
 class AppURLopener(urllib.FancyURLopener):
     version = "mozilla/3.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/5.0.1"
@@ -66,6 +67,7 @@ def alreadyReported():
     c.close()
     return l
 
+
 page1 = urllib.urlopen(URL1).read()
 page2 = urllib.urlopen(URL2).read()
 listings = getListingsFromPage(page1)+getListingsFromPage(page2)
@@ -81,7 +83,6 @@ saveListings(cheap)
 
 msg = ""
 for l in cheap:
-    msg +="$%d ::  %s :: %s :: trademe.co.nz/%s</a>\n" % (l['price'],l['time'],l['title'],l['url'])
+    msg +="$%d ::  %s :: %s :: %s</a>\n" % (l['price'],l['time'],l['title'], BASE_URL+"/"+l['url'])
 
 print msg
-#GmailSend.send('stephen.machine@gmail.com','supersecret9','stephennancekivell@gmail.com','BargainMe', msg)
