@@ -2,11 +2,14 @@
 
 import sys, BeautifulSoup,urllib,sqlite3
 
-PRICE_LIMIT = 40
+PRICE_UPPER_LIMIT = 700
+PRICE_LOWWER_LIMIT = 100
 BASE_URL = "" # TODO GUESS
-DB_FILE = "/home/stephen/bargainme.sqlite"
-URL1 = "http://www."+BASE_URL+"/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-0513-6458-&searchString=adsl&x=0&y=0&searchregion=100&type=Search&redirectFromAll=False&generalSearch_keypresses=4&generalSearch_suggested=0"
-URL2 = "http://www."+BASE_URL+"/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-2927-&searchString=wifi&type=Search&generalSearch_keypresses=4&generalSearch_suggested=0"
+DB_FILE = "bargainme.sqlite"
+URLS = [
+    "http://www."+BASE_URL+"/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-0513-6458-&searchString=adsl&x=0&y=0&searchregion=100&type=Search&redirectFromAll=False&generalSearch_keypresses=4&generalSearch_suggested=0",
+    "http://www."+BASE_URL+"/browse/searchresults.aspx?sort_order=expiry_asc&searchType=0002-0358-2927-&searchString=wifi&type=Search&generalSearch_keypresses=4&generalSearch_suggested=0"
+    ]
 
 class AppURLopener(urllib.FancyURLopener):
     version = "mozilla/3.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/5.0.1"
@@ -67,14 +70,15 @@ def alreadyReported():
     c.close()
     return l
 
+pages = [urllib.urlopen(url) for url in URLS]
 
-page1 = urllib.urlopen(URL1).read()
-page2 = urllib.urlopen(URL2).read()
-listings = getListingsFromPage(page1)+getListingsFromPage(page2)
+listings = []
+for page in pages:
+    listings += getListingsFromPage(page)
 
 reported = alreadyReported()
 
-cheap = [f for f in listings if (f['price'] < PRICE_LIMIT and closesSoon(str(f['time'])) and f['url'] not in reported )]
+cheap = [f for f in listings if (f['price'] < PRICE_UPPER_LIMIT and f['price'] > PRICE_LOWER_LIMIT and closesSoon(str(f['time'])) and f['url'] not in reported )]
 
 if len(cheap)==0:
     sys.exit(2)
