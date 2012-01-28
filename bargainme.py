@@ -3,7 +3,7 @@
 import sys, BeautifulSoup,urllib,sqlite3
 
 PRICE_UPPER_LIMIT = 700
-PRICE_LOWWER_LIMIT = 100
+PRICE_LOWER_LIMIT = 100
 BASE_URL = "" # TODO GUESS
 DB_FILE = "bargainme.sqlite"
 URLS = [
