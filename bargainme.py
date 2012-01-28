@@ -27,7 +27,9 @@ def parseListingCard(c):
             elif k=='class' and v=='listingBidPrice':
                 price = div.a.contents[0]
 
-    price = float(price[1:])
+    price = price[1:]
+    price = price.replace(",","") # for prices like $1,000 strip the ','
+    price = float(price)
     return {'title':title,'time':time,'price':price, 'url':url}
 
 def getListingsFromPage(page):
