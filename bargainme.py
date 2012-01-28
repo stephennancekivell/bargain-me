@@ -17,6 +17,7 @@ class AppURLopener(urllib.FancyURLopener):
 urllib._urlopener = AppURLopener()
 
 def parseListingCard(c):
+    price="$0"
     for div in c.findAll('div'):
         for k,v in div.attrs:
             if k=='class' and v=='listingTitle':
@@ -26,6 +27,9 @@ def parseListingCard(c):
                 time = div.contents
             elif k=='class' and v=='listingBidPrice':
                 price = div.a.contents[0]
+
+    if price=="$0":
+        print("WARING: could not get price for "+url)
 
     price = price[1:]
     price = price.replace(",","") # for prices like $1,000 strip the ','
